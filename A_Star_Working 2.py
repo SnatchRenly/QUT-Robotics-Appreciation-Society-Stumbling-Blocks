@@ -44,11 +44,14 @@ class NodeState(object):
 		self.path = parent.path[:]
 		self.path.append(self.co_ords)
 
-	def update_links(self, node_list, obstruction_lines)
+	def update_links(self, node_list, obstruction_list)
 		for node in node_list:
-			line_attempt = [self.co_ords, node.co_ords]
-			if line attempt doesnt intersect
-			self.links.append(node.id)
+			if not self.co_ords == node.co_ords
+				line_attempt = [self.co_ords, node.co_ords]
+				for obstruction in obstruction_list:
+					if line.crosses(obstruction):
+						break
+				self.links.append(node.id)
 
 
 	# def get_priority(elem):
@@ -110,11 +113,15 @@ class NodeList(list):
 	def print_list(self):
 		print ('[%s]' % '\n '.join(map(str, self)))
 
-	def add_node(self, node_co_ords)
+	def add_node(self, id = 0, node_co_ords)
 		# for node in block.block_nodes
-		new_node = NodeState(self.count, node)
+		if not id:
+			new_id = self.count
+			self.count += 1
+		else new_id = id
+		new_node = NodeState(new_id, node)
 		self.node_list.append(new_node)
-		self.count += 1
+		
 
 
 class AStarSolver:
@@ -127,6 +134,11 @@ class AStarSolver:
 		self.goal = goal
 		self.nodes = nodes
 		self.dist = 0
+		self.nodes.add_node(7000, start.co_ords)
+		self.nodes.add_node(7001, goal.co_ords)
+
+		for node in self.nodes:
+			node.update_links(self.nodes, self.obstruction_list)
 
 	def print_impossible(self):
 		print ("Goal of " + str(self.goal.co_ords) + "is not possible!")

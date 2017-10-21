@@ -34,14 +34,16 @@ class Block(object):
 			self.edges.append(new_edge)
 		new_edge = [self.vertices[-1], self.vertices[0]]
 		self.edges.append(new_edge)
-		return list(self.edges)
+		# return list(self.edges)
+		return self.edges
 
-	def cell_decomp(self):
+	def cell_decomp(self, obstrucion_edges):
 		"""Performs trapezoidal cell decomposition for individual block"""
 		self.block_nodes = []
+		self.obstrucion_edges = obstrucion_edges
 		for x in range(0,1):
 			new_line = [[self.vertices[x], [self.vertices[x][0], 0]]
-			for lines in global_lines:
+			for edge in self.obstrucion_edges:
 				if new_line intersects
 				new_line = [[self.vertices[x], intersecting point of line]
 			node_co_ords = 	[self.vertices[x][0], average (self.vertices[x][1], intersecting point of line[1]]
@@ -54,12 +56,44 @@ class Block(object):
 				new_line = [[self.vertices[x], intersecting point of line]
 			node_co_ords = 	[self.vertices[x][0], average (self.vertices[x][1], intersecting point of line[1]]
 		self.block_nodes.append(node_co_ords)
+		
+
 
 
 
 Class Scene(self):
-	
-	def __init__(self, )
+
+	end_effector_r = 5
+
+	def __init__(self, pucks, targets, immovable_blocks = 0, movable_blocks = 0):
+		"""initialises a scene ready for solving"""
+
+		self.pucks = pucks
+		self.targets = targets
+		self.immovable_blocks = immovable_blocks
+		self.movable_blocks = movable_blocks
+		self.edges = []
+
+	def expand_obstructions(self):
+		for blocks in self.immovable_blocks:
+			expand_bbox(self.end_effector_r)
+		for blocks in self.movable_blocks:
+			expand_bbox(self.end_effector_r)
+
+	def get_edges(self)
+		for block in self.immovable_blocks:
+			new_edges = block.get_edges()
+			self.edges.extend(new_edges)
+		for block in self.movable_blocks:
+			new_edges = block.get_edges()
+			self.edges.extend(new_edges)
+
+	def create_nodes(self):
+		self.node_list = NodeList()
+		for x in self.immovable_blocks:
+
+		#add nodes from immovable blocks
+		#add nodes from moveable blocks
 
 
 end_effector_r = 5
