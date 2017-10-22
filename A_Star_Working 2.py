@@ -1,4 +1,4 @@
-import Queue as Q
+import queue as Q
 
 
 class NodeState(object):
@@ -44,9 +44,9 @@ class NodeState(object):
 		self.path = parent.path[:]
 		self.path.append(self.co_ords)
 
-	def update_links(self, node_list, obstruction_list)
+	def update_links(self, node_list, obstruction_list):
 		for node in node_list:
-			if not self.co_ords == node.co_ords
+			if not self.co_ords == node.co_ords:
 				line_attempt = [self.co_ords, node.co_ords]
 				for obstruction in obstruction_list:
 					if line.crosses(obstruction):
@@ -113,29 +113,31 @@ class NodeList(list):
 	def print_list(self):
 		print ('[%s]' % '\n '.join(map(str, self)))
 
-	def add_node(self, id = 0, node_co_ords)
+	def add_node(self, node_co_ords, id = 0):
 		# for node in block.block_nodes
 		if not id:
 			new_id = self.count
 			self.count += 1
-		else new_id = id
-		new_node = NodeState(new_id, node)
+		else:
+			new_id = id
+		new_node = NodeState(new_id, node_co_ords)
 		self.node_list.append(new_node)
 		
 
 
 class AStarSolver:
 
-	def __init__(self, start, goal, nodes):
+	def __init__(self, start, goal, nodes, obstruction_list):
 		self.path = []
 		self.visited_queue = []
 		self.priority_queue = Q.PriorityQueue()
 		self.start = start
 		self.goal = goal
 		self.nodes = nodes
+		self.obstruction_list = obstruction_list
 		self.dist = 0
-		self.nodes.add_node(7000, start.co_ords)
-		self.nodes.add_node(7001, goal.co_ords)
+		self.nodes.add_node(start.co_ords, 7000)
+		self.nodes.add_node(goal.co_ords, 7001)
 
 		for node in self.nodes:
 			node.update_links(self.nodes, self.obstruction_list)
@@ -147,17 +149,17 @@ class AStarSolver:
 
 	def solve(self):
 		start_state = self.start
-		start_state.distance = 0
+		# start_state.distance = 0
 		start_state.priority = 0
 		# start_state = NodeState(0, self.start, 0, 0, 0, [1, 2])
 		count = 0
 		self.priority_queue.put((0, count, start_state))
 		while (not self.path and not self.priority_queue.empty()):
 			closest_child = self.priority_queue.get()[2]
-			print 'closest child is Node:' + str(closest_child.id) 
+			print ('closest child is Node:' + str(closest_child.id)) 
 			print('with details', str(closest_child))
 			closest_child.create_children(self.nodes)
-			print 'Children of Closest Child are' + '[%s]' % ', '.join(map(str, closest_child.children))
+			print ('Children of Closest Child are' + '[%s]' % ', '.join(map(str, closest_child.children)))
 			# print str(closest_child.children)
 			self.visited_queue.append(closest_child.id)
 			print ('Nodes visited so far: ' + str(self.visited_queue))
@@ -178,6 +180,7 @@ class AStarSolver:
 			self.print_impossible
 		print ('HOORAY ROBBIE! YOURE THE GREATEST!!! Final Path: ' + str(self.path))
 		print ('Total Distance Travelled: ' + str(self.dist))
+		return self.path
 
 puckstart = NodeState('start', [12, 57], [1,2])
 target = NodeState(13, [200,30], [11,12])
@@ -203,8 +206,8 @@ node_list = NodeList()
 node_list.extend([node1, node2, node3, node4, node5, node6, node7, node8, node9, node10, node11, node12, target])
 node_list.print_list()
 
-solve_test = AStarSolver(puckstart, target, node_list)
-solve_test.solve()
+# solve_test = AStarSolver(puckstart, target, node_list)
+# solve_test.solve()
 # nodelist.print_list()
 # # print('Nodes Unsorted ', str(nodelist))
 # print ('\nUnsorted list\n' + '\n'.join(map(str, nodelist)))

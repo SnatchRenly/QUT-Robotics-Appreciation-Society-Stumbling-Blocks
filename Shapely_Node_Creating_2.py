@@ -5,8 +5,8 @@ from shapely.geometry import Polygon
 from shapely.geometry import LineString
 from shapely.geometry import Point
 import queue as Q
-
 import pdb
+import matplotlib.pyplot as plt
 
 
 
@@ -109,14 +109,13 @@ class NodeState(object):
 # 		return dist
 
 class NodeList(list):
-	def __init__(self):
-		self.node_list = []		
-		self.node_list.append(NodeState(0, (10, 75)))
-		self.node_list.append(NodeState(1, (10, 150)))
-		self.node_list.append(NodeState(2, (10, 225)))
-		self.node_list.append(NodeState(3, (590, 75)))
-		self.node_list.append(NodeState(4, (590, 150)))
-		self.node_list.append(NodeState(5, (590, 225)))
+	def __init__(self):	
+		self.append(NodeState(0, (10, 75)))
+		self.append(NodeState(1, (10, 150)))
+		self.append(NodeState(2, (10, 225)))
+		self.append(NodeState(3, (590, 75)))
+		self.append(NodeState(4, (590, 150)))
+		self.append(NodeState(5, (590, 225)))
 		self.count = 6
 
 	def get_node(self, id):
@@ -136,7 +135,7 @@ class NodeList(list):
 			new_id = id
 		new_node = NodeState(new_id, node_point)
 		# print(str(new_node))
-		self.node_list.append(new_node)
+		self.append(new_node)
 		# print(str(self.node_list))
 		
 
@@ -154,11 +153,12 @@ class AStarSolver:
 		self.dist = 0
 		self.nodes.add_node(start.co_ords, 7000)
 		self.nodes.add_node(goal.co_ords, 7001)
-		self.nodes.print_list()
+		# self.nodes.print_list()
 
 		for node in self.nodes:
 			node.update_links(self.nodes, self.obstruction_list)
-		
+			node.goal_co_ords = self.goal.co_ords
+		print("Node List with updated links")
 		self.nodes.print_list()
 		# pdb.set_trace()
 
@@ -296,6 +296,7 @@ class Block(object):
 class Scene:
 	'''A class to model the scene on a workspace'''
 	end_effector_r = 5
+	holding_spot = [350, 300]
 
 	def __init__(self, pucks, targets, immovable_blocks = 0, movable_blocks = 0):
 		"""initialises a scene ready for solving"""
@@ -339,11 +340,30 @@ class Scene:
 			# self.node_list.extend(nodes)
 			for node in nodes:
 				self.node_list.add_node(node)
-		self.node_list.extend(self.node_list.node_list)
+		# self.node_list.extend(self.node_list)
+
+	def plot_nodes(self):
+		xlist = []
+		ylist = []
+		for node in self.node_list:
+			xlist.extend(node.co_ords)
+			ylist.extend(node.co_ords)
+
+		plt.plot(xlist, ylist, 'ro')
+		plt.axis([0, 600, 0, 300])
+		plt.show()
 
 	def solve_puck_paths(self):
 		solution = AStarSolver(self.pucks[0], self.targets[0],self.node_list, self.obstruction_list)
-		solution.solve()
+		self.puck_path = solution.solve()
+
+	def solve_initial_path(self):
+		solution = AStarSolver(self.holding_spot, self.pucks[0], self.node_list, self.obstruction_list)
+		self.initial_path = solution.solve()
+
+	def solve_return_path(self):
+		solution = AStarSolver(self.targets[0], self.holding_spot, self.node_list, self.obstruction_list)
+		self.initial_path = solution.solve()
 
 
 
@@ -373,7 +393,14 @@ scene.expand_obstructions()
 scene.create_nodes()
 print("Node List to iterate through:")
 scene.node_list.print_list()
+# scene.plot_nodes()
+# scene.solve_initial_path()
 scene.solve_puck_paths()
+# scene.solve_return_path()
+
+# plt.plot([1,2,3,4], [1,4,9,16], 'ro')
+# plt.axis([0, 6, 0, 20])
+# plt.show()
 
 
 
